@@ -1,0 +1,135 @@
+<div>
+  <!-- 面包屑导航 -->
+  <el-breadcrumb class="bread" separator-class="el-icon-arrow-right">
+    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+    <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+    <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+  </el-breadcrumb>
+
+  <!-- 查询 -->
+  <el-row :gutter="20">
+    <el-col :span="8">
+      <!-- slot="append" 放在后面 -->
+      <el-input placeholder="请输入内容" v-model="searchText">
+        <el-button
+          @click="startSearch"
+          slot="append"
+          icon="el-icon-search"
+        ></el-button>
+      </el-input>
+    </el-col>
+    <el-col :span="3">
+      <!-- 添加用户按钮 -->
+      <el-button @click="showAddUserDialog">添加用户</el-button>
+    </el-col>
+  </el-row>
+
+  <!-- 表单 -->
+  <el-table :data="usersList" style="width: 100%">
+    <el-table-column prop="username" label="姓名" width="180"></el-table-column>
+    <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
+    <el-table-column prop="mobile" label="电话"></el-table-column>
+    <el-table-column label="用户状态">
+      <!-- 自定义列修改用户状态 -->
+      <template slot-scope="scope">
+        <el-switch
+          v-model="scope.row.mg_state"
+          @change="changeState(scope.row)"
+        ></el-switch>
+      </template>
+    </el-table-column>
+
+    <el-table-column label="操作">
+      <!-- 自定义列表 -->
+      <!-- 修改按钮 -->
+      <template slot-scope="scope">
+        <el-button
+          plain
+          size="mini"
+          type="primary"
+          icon="el-icon-edit"
+          @click="showEditUserDialog(scope.row)"
+        ></el-button>
+        <!-- 删除按钮 -->
+        <el-button
+          plain
+          size="mini"
+          type="danger"
+          icon="el-icon-delete"
+          @click="delUsers(scope.row.id)"
+        ></el-button>
+        <el-button plain size="mini" type="success" icon="el-icon-check"
+          >分配角色</el-button
+        >
+      </template>
+    </el-table-column>
+  </el-table>
+
+  <!-- 分页
+  :total: 属性 总条数
+  :page-size: 属性 一页显示几个
+  current-page: 当前页
+  -->
+  <el-pagination
+    background
+    layout="prev, pager, next"
+    :total="total"
+    :page-size="2"
+    :current-page="pagenum"
+    @current-change="changePage"
+  ></el-pagination>
+
+  <!-- 第一个对话框 添加用户弹框 -->
+  <el-dialog
+    title="添加用户"
+    :visible.sync="dialogAddUserVisible"
+    @close="addUserDialogClose"
+  >
+    <el-form
+      :model="addUserForm"
+      label-width="100px"
+      :rules="rules"
+      ref="addUserRef"
+    >
+      <el-form-item label="用户名" prop="username">
+        <el-input v-model="addUserForm.username" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="密码" prop="password">
+        <el-input v-model="addUserForm.password" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="邮箱" prop="email">
+        <el-input v-model="addUserForm.email" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="手机" prop="moblie">
+        <el-input v-model="addUserForm.moblie" autocomplete="off"></el-input>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="dialogAddUserVisible = false">取 消</el-button>
+      <el-button type="primary" @click="addUser">确 定</el-button>
+    </div>
+  </el-dialog>
+
+  <!-- 第二个对话框 修改用户弹框 -->
+  <el-dialog title="修改用户" :visible.sync="dialogEditUserVisible">
+    <el-form
+      :model="editUserForm"
+      label-width="100px"
+      :rules="rules"
+    >
+      <el-form-item label="用户名" prop="username">
+        <el-tag type="info">{{ editUserForm.username }}</el-tag>
+      </el-form-item>
+      <el-form-item label="邮箱" prop="email">
+        <el-input v-model="editUserForm.email" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="手机" prop="moblie">
+        <el-input v-model="editUserForm.moblie" autocomplete="off"></el-input>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="dialogEditUserVisible = false">取 消</el-button>
+      <el-button type="primary" @click="editUser">确 定</el-button>
+    </div>
+  </el-dialog>
+</div>

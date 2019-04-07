@@ -48,18 +48,16 @@ export default {
   methods: {
     // 登录再次验证
     startLogi (formName) {
-      this.$refs.ruleForm.validate(valid => {
+      this.$refs.ruleForm.validate(async valid => {
         // 登录验证未通过
         if (!valid) {
           return false
         }
         // 校验成功
         // console.log('开始登录')
-        axios
-          .post('http://localhost:8888/api/private/v1/login', this.ruleForm)
-          .then(res => {
+        let res = await axios.post('http://localhost:8888/api/private/v1/login', this.ruleForm);
             console.log(res)
-            if (res.data.meta.status === 200) {
+               if (res.data.meta.status === 200) {
               // 登录提示成功
               // console.log('登陆成功')
               // 保存token到本地 后面判断是否登录要用到
@@ -82,7 +80,7 @@ export default {
                 duration: 800
               })
             }
-          })
+
       })
     },
     resetForm () {
